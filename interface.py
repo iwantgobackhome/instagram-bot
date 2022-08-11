@@ -1,7 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 
+
 class Interface:
+
     def __init__(self):
         self.window = Tk()
         self.window.title("instagram bot ver 1.0")
@@ -60,12 +62,14 @@ class Interface:
         self.tag_entry = Entry(self.setting_frame, width=20, fg="gray")
         self.tag_entry.insert(END, "태그나 계정을 입력하세요")
         self.tag_entry.grid(row=1, column=1, sticky="w")
+        self.tag_entry.bind('<Button-1>', self.tag_clear)       # 클릭하면 지워짐
 
             # comment
         self.comment_check = Checkbutton(self.setting_frame, text="댓글   ")
         self.comment_check.grid(row=2, column=0)
         self.comment_entry = Text(self.setting_frame, width=30, height=5, fg="gray")
         self.comment_entry.insert(END, "댓글 내용을 입력하세요")
+        self.comment_entry.bind('<Button-1>', self.comment_clear)
         self.comment_entry.grid(row=2, column=1, rowspan=5, pady=15)
 
             # count
@@ -73,6 +77,7 @@ class Interface:
         self.count_label.grid(row=7, column=0)
         self.count_entry = Entry(self.setting_frame, width=24, fg="gray")
         self.count_entry.insert(0, "하루 100개 이하를 추천합니다")
+        self.count_entry.bind('<Button-1>', self.count_clear)
         self.count_entry.grid(row=7, column=1, sticky="w", pady=5)
 
             # delay
@@ -80,6 +85,7 @@ class Interface:
         self.delay_label.grid(row=8, column=0)
         self.delay_entry = Entry(self.setting_frame, width=13, fg="gray")
         self.delay_entry.insert(0, "초단위로 입력")
+        self.delay_entry.bind('<Button-1>', self.delay_clear)
         self.delay_entry.grid(row=8, column=1, sticky="w")
 
             # delay mode
@@ -90,3 +96,19 @@ class Interface:
 
 
         self.window.mainloop()
+
+    def tag_clear(self, event):     # 매개변수 event 안써주면 안됨
+        self.tag_entry.delete(0, END)
+        self.tag_entry.config(fg="black")
+
+    def comment_clear(self, event):
+        self.comment_entry.delete(0.0, END)
+        self.comment_entry.config(fg="black")
+
+    def count_clear(self, event):
+        self.count_entry.delete(0, END)
+        self.count_entry.config(fg="black")
+
+    def delay_clear(self, event):
+        self.delay_entry.delete(0, END)
+        self.delay_entry.config(fg="black")

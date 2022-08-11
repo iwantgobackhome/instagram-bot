@@ -1,3 +1,3 @@
-from interface import Interface
+from interface import *
 
 face = Interface()
