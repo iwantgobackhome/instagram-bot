@@ -9,11 +9,12 @@ class Interface:
         self.window.title("instagram bot ver 1.0")
         self.window.geometry("620x460")
         self.insta_img = PhotoImage(file="image/insta_color.png")
+        self.window.iconbitmap("image/insta_color.ico")
 
         # 상단
-        self.top_frame = Frame(width=620, height=60, relief="raised", borderwidth=1)
-        self.top_label = Label(self.top_frame, text="Instagram", font=("Ebrima", 24, "bold"), fg="#5e4b5d", pady=0)
-        self.top_label.place(x=250, y=0)
+        self.top_frame = Frame(width=620, height=60, relief="raised", borderwidth=1, bg="white")
+        self.top_label = Label(self.top_frame, text="Instagram", font=("Ebrima", 24, "bold"), fg="#E1306C", bg="white")
+        self.top_label.place(x=245, y=0)
         self.top_frame.grid(row=0, column=0, columnspan=2)
 
         # 로그인
@@ -94,7 +95,6 @@ class Interface:
 
         self.setting_frame.place(x=25, y=190)
 
-
         self.window.mainloop()
 
     def tag_clear(self, event):     # 매개변수 event 안써주면 안됨
@@ -112,3 +112,17 @@ class Interface:
     def delay_clear(self, event):
         self.delay_entry.delete(0, END)
         self.delay_entry.config(fg="black")
+
+    def follow_mode(self):
+        if self.follow_combo.get() == self.follow_mode[0]:
+            pass
+
+    def get_id(self):
+        return self.id_box.get()
+
+    def get_pw(self):
+        return  self.pw_box.get()
+
+    def click_login(self):
+        id = self.get_id()
+        pw = self.get_pw()
