@@ -1,20 +1,22 @@
 from tkinter import *
 from tkinter import ttk
 
-
 class Interface:
 
     def __init__(self):
         self.window = Tk()
         self.window.title("instagram bot ver 1.0")
         self.window.geometry("620x460")
-        self.insta_img = PhotoImage(file="image/insta_color.png")
+        self.insta_img = PhotoImage(file="image/insta_color2.png")
         self.window.iconbitmap("image/insta_color.ico")
 
         # 상단
         self.top_frame = Frame(width=620, height=60, relief="raised", borderwidth=1, bg="white")
         self.top_label = Label(self.top_frame, text="Instagram", font=("Ebrima", 24, "bold"), fg="#E1306C", bg="white")
-        self.top_label.place(x=245, y=0)
+        self.top_label.place(x=255, y=0)
+        self.top_canvas = Canvas(self.top_frame, width=40, height=40, bg="white", highlightthickness=0)
+        self.top_logo = self.top_canvas.create_image(21, 21, image=self.insta_img)
+        self.top_canvas.place(x=205, y=6)
         self.top_frame.grid(row=0, column=0, columnspan=2)
 
         # 로그인
