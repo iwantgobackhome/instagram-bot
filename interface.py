@@ -1,5 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
+from insta import *
+
 
 class Interface:
 
@@ -29,10 +32,10 @@ class Interface:
             # pw
         self.pw_label = Label(self.login_frame, text="PW:")
         self.pw_label.place(x=30, y=43)
-        self.pw_box = Entry(self.login_frame, width=20)
+        self.pw_box = Entry(self.login_frame, width=20, show="*")
         self.pw_box.place(x=55, y=43)
             # login button
-        self.login_button = Button(self.login_frame, text="login", width=8, height=3)
+        self.login_button = Button(self.login_frame, text="login", width=8, height=3,command=self.click_login)
         self.login_button.place(x=205, y=10)
         self.login_frame.place(x=25, y=70)
 
@@ -50,15 +53,18 @@ class Interface:
         # 설정
         self.setting_frame = LabelFrame(text="setting", relief="raised", borderwidth=1, padx=10, pady=10)
             # follow
-        self.follow_check = Checkbutton(self.setting_frame, text="팔로우")
+        self.follow_check_value = IntVar()
+        self.follow_check = Checkbutton(self.setting_frame, text="팔로우", variable=self.follow_check_value)
         self.follow_check.grid(row=0, column=0, pady=5)
         self.follow_mode = ["태그로 팔로우", "계정으로 팔로우"]
-        self.follow_combo = ttk.Combobox(self.setting_frame, width=15, values=self.follow_mode)
+        self.follow_combo = ttk.Combobox(self.setting_frame, width=15, values=self.follow_mode, postcommand=self.follow_combo_check)
         self.follow_combo.current(0)     # 기본 값
         self.follow_combo.grid(row=0, column=1, sticky="w")
+        # self.follow_combo.bind('<Button-1>', self.follow_combo_check)
 
             # like
-        self.like_check = Checkbutton(self.setting_frame, text="좋아요")
+        self.like_check_value = IntVar()
+        self.like_check = Checkbutton(self.setting_frame, text="좋아요", variable=self.like_check_value)
         self.like_check.grid(row=1, column=0, pady=5)
 
             # tag
@@ -68,10 +74,11 @@ class Interface:
         self.tag_entry.bind('<Button-1>', self.tag_clear)       # 클릭하면 지워짐
 
             # comment
-        self.comment_check = Checkbutton(self.setting_frame, text="댓글   ")
+        self.comment_check_value = IntVar()
+        self.comment_check = Checkbutton(self.setting_frame, text="댓글   ", variable=self.comment_check_value)
         self.comment_check.grid(row=2, column=0)
         self.comment_entry = Text(self.setting_frame, width=30, height=5, fg="gray")
-        self.comment_entry.insert(END, "댓글 내용을 입력하세요")
+        self.comment_entry.insert(0.0, "댓글 내용을 입력하세요")
         self.comment_entry.bind('<Button-1>', self.comment_clear)
         self.comment_entry.grid(row=2, column=1, rowspan=5, pady=15)
 
@@ -99,32 +106,139 @@ class Interface:
 
         self.window.mainloop()
 
+    # clear 매서드는 각 입력창의 기본값을 클릭하면 지우고 쓰는 역할
     def tag_clear(self, event):     # 매개변수 event 안써주면 안됨
-        self.tag_entry.delete(0, END)
-        self.tag_entry.config(fg="black")
+        if self.tag_entry.get() == "태그나 계정을 입력하세요":
+            self.tag_entry.delete(0, END)
+            self.tag_entry.config(fg="black")
+        if self.comment_entry.get(0.0, END) == "\n":
+            self.comment_entry.insert(0.0, "댓글 내용을 입력하세요")
+            self.comment_entry.config(fg="gray")
+        if self.count_entry.get() == "":
+            self.count_entry.insert(0, "하루 100개 이하를 추천합니다")
+            self.count_entry.config(fg="gray")
+        if self.delay_entry.get() == "":
+            self.delay_entry.insert(0, "초단위로 입력")
+            self.delay_entry.config(fg="gray")
+        self.follow_combo_check()
 
     def comment_clear(self, event):
-        self.comment_entry.delete(0.0, END)
-        self.comment_entry.config(fg="black")
+        if self.comment_entry.get(0.0, END) == "댓글 내용을 입력하세요\n":        # text박스는 insert하면 끝에 \n 들어감
+            self.comment_entry.delete(0.0, END)
+            self.comment_entry.config(fg="black")
+        if self.tag_entry.get() == "":
+            self.tag_entry.insert(0, "태그나 계정을 입력하세요")
+            self.tag_entry.config(fg="gray")
+        if self.count_entry.get() == "":
+            self.count_entry.insert(0, "하루 100개 이하를 추천합니다")
+            self.count_entry.config(fg="gray")
+        if self.delay_entry.get() == "":
+            self.delay_entry.insert(0, "초단위로 입력")
+            self.delay_entry.config(fg="gray")
+        self.follow_combo_check()
 
     def count_clear(self, event):
-        self.count_entry.delete(0, END)
-        self.count_entry.config(fg="black")
+        if self.count_entry.get() == "하루 100개 이하를 추천합니다":
+            self.count_entry.delete(0, END)
+            self.count_entry.config(fg="black")
+        if self.tag_entry.get() == "":
+            self.tag_entry.insert(0, "태그나 계정을 입력하세요")
+            self.tag_entry.config(fg="gray")
+        if self.comment_entry.get(0.0, END) == "\n":
+            self.comment_entry.insert(0.0, "댓글 내용을 입력하세요")
+            self.comment_entry.config(fg="gray")
+        if self.delay_entry.get() == "":
+            self.delay_entry.insert(0, "초단위로 입력")
+            self.delay_entry.config(fg="gray")
 
     def delay_clear(self, event):
-        self.delay_entry.delete(0, END)
-        self.delay_entry.config(fg="black")
+        if self.delay_entry.get() == "초단위로 입력":
+            self.delay_entry.delete(0, END)
+            self.delay_entry.config(fg="black")
+        if self.tag_entry.get() == "":
+            self.tag_entry.insert(0, "태그나 계정을 입력하세요")
+            self.tag_entry.config(fg="gray")
+        if self.comment_entry.get(0.0, END) == "\n":
+            self.comment_entry.insert(0.0, "댓글 내용을 입력하세요")
+            self.comment_entry.config(fg="gray")
+        if self.count_entry.get() == "":
+            self.count_entry.insert(0, "하루 100개 이하를 추천합니다")
+            self.count_entry.config(fg="gray")
 
     def follow_mode(self):
         if self.follow_combo.get() == self.follow_mode[0]:
             pass
 
-    def get_id(self):
-        return self.id_box.get()
-
-    def get_pw(self):
-        return  self.pw_box.get()
+# 팔로우 모드에 따른 체크버튼 비활성화
+    def follow_combo_check(self):
+        if self.follow_combo.get() == "계정으로 팔로우":
+            self.comment_check.config(state="disabled")
+            self.like_check.config(state="disabled")
+        else:
+            self.comment_check.config(state="active")
+            self.like_check.config(state="active")
 
     def click_login(self):
-        id = self.get_id()
-        pw = self.get_pw()
+        user_id = self.id_box.get()
+        user_pw = self.pw_box.get()
+        count_value = self.count_entry.get()
+        delay_value = self.delay_entry.get()
+        insta = None
+
+        follow_check = self.follow_check_value.get()        # 0이면 체크해제, 1이면 체크
+        like_check = self.like_check_value.get()
+        comment_check = self.comment_check_value.get()
+        account_follow = self.follow_combo.get() == "계정으로 팔로우"
+
+        # 모드 bool 변수
+        account_follow_mode = account_follow and follow_check == 1 and like_check == 0 and comment_check == 0
+        only_follow_mode = follow_check == 1 and like_check == 0 and comment_check == 0
+        only_like_mode = follow_check == 0 and like_check == 1 and comment_check == 0
+        only_comment_mode = follow_check == 0 and like_check == 0 and comment_check == 1
+        follow_like_mode = follow_check == 1 and like_check == 1 and comment_check == 0
+        follow_comment_mode = follow_check == 1 and like_check == 0 and comment_check == 1
+        like_comment_mode = follow_check == 0 and like_check == 1 and comment_check == 1
+        all_mode = follow_check == 1 and like_check == 1 and comment_check == 1
+
+
+        # 아이디하고 비밀번호 공백인지 확인
+        if user_id != "" and user_pw != "":
+            # 실행버튼 하나도 안눌렀는지 확인
+            if follow_check != 0 or like_check != 0 or comment_check != 0:
+                # 개수와 딜레이 공백인지 확인
+                if count_value != "하루 100개 이하를 추천합니다" and count_value != "" and delay_value != "초단위로 입력" and delay_value != "":
+                    # insta = InstaFollower()
+                    # insta.login(user_id, user_pw)
+
+                    if account_follow_mode:
+                        account = self.tag_entry.get()
+                        if account != "":
+                            # insta.find_followers(account)
+                            print("계정으로 팔로우")
+                        else:
+                            messagebox.showerror(title="Error", message="검색할 계정을 입력하세요!")
+                    elif only_follow_mode and not account_follow:
+                        print("태그로 팔로우")
+                    elif only_like_mode and not account_follow:
+                        print("좋아요만")
+                    elif only_comment_mode and not account_follow:
+                        print("댓글만")
+                    elif follow_like_mode and not account_follow:
+                        print("팔로우, 좋아요")
+                    elif follow_comment_mode and not account_follow:
+                        print("팔로우, 댓글")
+                    elif like_comment_mode and not account_follow:
+                        print("좋아요, 댓글")
+                    elif all_mode and not account_follow:
+                        print("모두 다")
+                    else:
+                        messagebox.showerror(title="Error", message="계정으로 팔로우모드는 다른 모드와 같이 실행 할 수 없습니다!\n다른 모드"
+                                                                    "체크를 해제해주세요!")
+                else:
+                    messagebox.showerror(title="Error", message="개수와 딜레이를 입력해주세요!")
+            else:
+                messagebox.showerror(title="Error", message="실행 모드를 하나 이상 체크해주세요!")
+
+        else:
+            messagebox.showerror(title="Error", message="아이디와 비밀번호를 입력해주세요!")
+
