@@ -7,21 +7,25 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 import time
 import random
+from random_user_agent.user_agent import UserAgent          # 랜덤 유저 에이전트 패키지
+from random_user_agent.params import SoftwareName, OperatingSystem
 
 
 class Insta:
     def __init__(self):
-        self.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+        self.user_agent = None
         self.options = Options()
         self.driver = None
 
-    def login(self, email, pw):
-        self.options.add_argument("headless")
-        self.options.add_argument(self.user_agent)
+    def login(self, email, pw, show_window_mode):
+        self.get_user_agent()
+        if show_window_mode == 0:           # 관측모드 확인
+            self.options.add_argument("headless")
+        self.options.add_argument('user-agent='+self.user_agent)     # 크롤링 차단 방지 user-agent 추가
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         # 인스타 로그인 페이지 열기
         self.driver.get("https://www.instagram.com/accounts/login/",)
-        # self.driver.maximize_window()
+        self.driver.maximize_window()
         time.sleep(2)
 
         # 이름과 패스워드 입력
@@ -96,3 +100,10 @@ class Insta:
 
     def close_insta(self):
         self.driver.close()
+
+    def get_user_agent(self):               # 랜덤으로 유저 에이전트 가져오는 함수
+        software_names = [SoftwareName.CHROME.value]
+        operatin_systems = [OperatingSystem.WINDOWS.value]
+
+        user_agent_rotator = UserAgent(software_names=software_names,operatin_systems=operatin_systems, limit=100)
+        self.user_agent = user_agent_rotator.get_random_user_agent()

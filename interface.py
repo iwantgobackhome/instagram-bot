@@ -200,6 +200,7 @@ class Interface:
         like_check = self.like_check_value.get()
         comment_check = self.comment_check_value.get()
         delay_check = self.delay_safe_mode_value.get()
+        show_window_check = self.show_window_value.get()
         account_follow = self.follow_combo.get() == "계정으로 팔로우"
 
         # 모드 bool 변수
@@ -226,7 +227,7 @@ class Interface:
 
                     insta = Insta()
                     self.list_box.insert(END, "로그인 중")
-                    login_success = insta.login(user_id, user_pw)
+                    login_success = insta.login(user_id, user_pw, show_window_check)
                     if login_success:
                         self.list_box.insert(END, "로그인 성공")
                         insta.search(tag_value)
