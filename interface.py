@@ -233,6 +233,7 @@ class Interface:
                         insta.search(tag_value)
 
                         if account_follow_mode:
+                            self.list_box.insert(END, "팔로우 중")
                             insta.click_follow_button()
                             self.followed = insta.account_follow(count_value, delay_value, delay_check)
                             self.insert_list_box()
