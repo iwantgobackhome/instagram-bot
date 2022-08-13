@@ -1,3 +1,4 @@
-from interface import *
+from interface import Interface
+import selenium.common.exceptions
 
-face = Interface()
+ui = Interface()
