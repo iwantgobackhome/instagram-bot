@@ -137,10 +137,18 @@ class Insta:
 
             if mode_num in (3, 5, 6, 7):
                 # 댓글
-                comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasx .aaoe .aaoc")
-                comment_area.send_keys(comment_value)
-                comment_area.send_keys(Keys.ENTER)
-                time.sleep(1)
+                try:
+                    WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".rq0escxv ._aata ._aasw ._aasx textarea")))
+                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx textarea")
+                    comment_area.click()
+                    # StaleElementReferenceException 에러 발생하여 다시 가져오기
+                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR,
+                                                            value=".rq0escxv ._aata ._aasw ._aasx ._aaoe ._aao9 ._ablz")
+                    comment_area.send_keys(comment_value)
+                    comment_area.send_keys(Keys.ENTER)
+                    time.sleep(2)
+                except selenium.common.exceptions.TimeoutException:     # 간혹 댓글 차단 게시글 있으면 넘어가기
+                    pass
             # 닫기
             close_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .o9tjht9c .futnfnd5")
             close_button.click()

@@ -110,8 +110,7 @@ class Interface:
 
         self.window.mainloop()
 
-        self.followed = []
-
+        self.mode_num = 0
 
     # clear 매서드는 각 입력창의 기본값을 클릭하면 지우고 쓰는 역할
     def tag_clear(self, event):     # 매개변수 event 안써주면 안됨
@@ -210,14 +209,29 @@ class Interface:
 
         # 모드 bool 변수
         account_follow_mode = account_follow and follow_check == 1 and like_check == 0 and comment_check == 0
-        only_follow_mode = follow_check == 1 and like_check == 0 and comment_check == 0
-        only_like_mode = follow_check == 0 and like_check == 1 and comment_check == 0
-        only_comment_mode = follow_check == 0 and like_check == 0 and comment_check == 1
-        follow_like_mode = follow_check == 1 and like_check == 1 and comment_check == 0
-        follow_comment_mode = follow_check == 1 and like_check == 0 and comment_check == 1
-        like_comment_mode = follow_check == 0 and like_check == 1 and comment_check == 1
-        all_mode = follow_check == 1 and like_check == 1 and comment_check == 1
+        only_follow_mode = follow_check == 1 and like_check == 0 and comment_check == 0 and not account_follow
+        only_like_mode = follow_check == 0 and like_check == 1 and comment_check == 0 and not account_follow
+        only_comment_mode = follow_check == 0 and like_check == 0 and comment_check == 1 and not account_follow
+        follow_like_mode = follow_check == 1 and like_check == 1 and comment_check == 0 and not account_follow
+        follow_comment_mode = follow_check == 1 and like_check == 0 and comment_check == 1 and not account_follow
+        like_comment_mode = follow_check == 0 and like_check == 1 and comment_check == 1 and not account_follow
+        all_mode = follow_check == 1 and like_check == 1 and comment_check == 1 and not account_follow
 
+        # 각 모드별 숫자를 매겨서 함수 호출시에 관리
+        if only_follow_mode:
+            self.mode_num = 1
+        elif only_like_mode:
+            self.mode_num = 2
+        elif only_comment_mode:
+            self.mode_num = 3
+        elif follow_like_mode:
+            self.mode_num = 4
+        elif follow_comment_mode:
+            self.mode_num = 5
+        elif like_comment_mode:
+            self.mode_num = 6
+        elif all_mode:
+            self.mode_num = 7
 
         # 아이디하고 비밀번호 공백인지 확인
         if user_id != "" and user_pw != "":
@@ -237,52 +251,17 @@ class Interface:
                         self.list_box.insert(END, "로그인 성공")
                         insta.search(tag_value)
 
-                        if account_follow_mode:
+                        if 1 <= self.mode_num <= 7:
+                            self.list_box.insert(END, "수행 중")
+                            do_popular_result = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value, self.mode_num)
+                            self.insert_list_box(do_popular_result)
+
+                        elif account_follow_mode:
                             self.list_box.insert(END, "팔로우 중")
                             insta.click_follow_button()
-                            # self.followed = insta.account_follow(count_value, delay_value, delay_check)
                             followed = insta.account_follow(count_value, delay_value, delay_check)
                             self.insert_list_box(followed)
-                        elif only_follow_mode and not account_follow:
-                            mode_num = 1
-                            print("태그로 팔로우")
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
-                                                             mode_num)
-                            self.insert_list_box(liked)
-                        elif only_like_mode and not account_follow:
-                            mode_num = 2
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value, mode_num)
-                            self.insert_list_box(liked)
-                        elif only_comment_mode and not account_follow:
-                            mode_num = 3
-                            print("댓글만")
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
-                                                             mode_num)
-                            self.insert_list_box(liked)
-                        elif follow_like_mode and not account_follow:
-                            mode_num = 4
-                            print("팔로우, 좋아요")
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
-                                                             mode_num)
-                            self.insert_list_box(liked)
-                        elif follow_comment_mode and not account_follow:
-                            mode_num = 5
-                            print("팔로우, 댓글")
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
-                                                             mode_num)
-                            self.insert_list_box(liked)
-                        elif like_comment_mode and not account_follow:
-                            mode_num = 6
-                            print("좋아요, 댓글")
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
-                                                             mode_num)
-                            self.insert_list_box(liked)
-                        elif all_mode and not account_follow:
-                            mode_num = 7
-                            print("모두 다")
-                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
-                                                             mode_num)
-                            self.insert_list_box(liked)
+
                         else:
                             insta.close_insta()
                             messagebox.showerror(title="Error", message="계정으로 팔로우모드는 다른 모드와 같이 실행 할 수 없습니다!\n다른 모드"
