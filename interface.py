@@ -179,15 +179,19 @@ class Interface:
 # 팔로우 모드에 따른 체크버튼 비활성화
     def follow_combo_check(self):
         if self.follow_combo.get() == "계정으로 팔로우":
+            self.comment_check.deselect()
+            self.like_check.deselect()
             self.comment_check.config(state="disabled")
             self.like_check.config(state="disabled")
         else:
             self.comment_check.config(state="active")
             self.like_check.config(state="active")
 
-    def insert_list_box(self):
-        for followed_id in self.followed:
-            self.list_box.insert(END, followed_id)
+    def insert_list_box(self, do_list):
+        # for followed_id in self.followed:
+        #     self.list_box.insert(END, followed_id)
+        for i in do_list:
+            self.list_box.insert(END, i)
 
     def click_login(self):
         user_id = self.id_box.get()
@@ -195,6 +199,7 @@ class Interface:
         count_value = self.count_entry.get()
         delay_value = self.delay_entry.get()
         tag_value = self.tag_entry.get()
+        comment_value = self.comment_entry.get(0.0, END)
 
         follow_check = self.follow_check_value.get()        # 0이면 체크해제, 1이면 체크
         like_check = self.like_check_value.get()
@@ -235,29 +240,56 @@ class Interface:
                         if account_follow_mode:
                             self.list_box.insert(END, "팔로우 중")
                             insta.click_follow_button()
-                            self.followed = insta.account_follow(count_value, delay_value, delay_check)
-                            self.insert_list_box()
+                            # self.followed = insta.account_follow(count_value, delay_value, delay_check)
+                            followed = insta.account_follow(count_value, delay_value, delay_check)
+                            self.insert_list_box(followed)
                         elif only_follow_mode and not account_follow:
+                            mode_num = 1
                             print("태그로 팔로우")
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
+                                                             mode_num)
+                            self.insert_list_box(liked)
                         elif only_like_mode and not account_follow:
-                            print("좋아요만")
+                            mode_num = 2
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value, mode_num)
+                            self.insert_list_box(liked)
                         elif only_comment_mode and not account_follow:
+                            mode_num = 3
                             print("댓글만")
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
+                                                             mode_num)
+                            self.insert_list_box(liked)
                         elif follow_like_mode and not account_follow:
+                            mode_num = 4
                             print("팔로우, 좋아요")
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
+                                                             mode_num)
+                            self.insert_list_box(liked)
                         elif follow_comment_mode and not account_follow:
+                            mode_num = 5
                             print("팔로우, 댓글")
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
+                                                             mode_num)
+                            self.insert_list_box(liked)
                         elif like_comment_mode and not account_follow:
+                            mode_num = 6
                             print("좋아요, 댓글")
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
+                                                             mode_num)
+                            self.insert_list_box(liked)
                         elif all_mode and not account_follow:
+                            mode_num = 7
                             print("모두 다")
+                            liked = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value,
+                                                             mode_num)
+                            self.insert_list_box(liked)
                         else:
                             insta.close_insta()
                             messagebox.showerror(title="Error", message="계정으로 팔로우모드는 다른 모드와 같이 실행 할 수 없습니다!\n다른 모드"
                                                                         "체크를 해제해주세요!")
                     else:
                         self.list_box.insert(END, "로그인 실패")
-                        messagebox.showerror(title="Error", message="아이디나 비밀번호가 잘못되었습니다!")
+                        messagebox.showerror(title="Login Error", message="로그인 중에 문제가 발생했습니다\n아이디나 비밀번호를 다시 한 번 확인해주세요.")
                 else:
                     messagebox.showerror(title="Error", message="태그(계정) 또는 개수 또는 딜레이를 입력해주세요!\n"
                                                                 "태그(계정), 개수, 딜레이는 필수 값입니다!")

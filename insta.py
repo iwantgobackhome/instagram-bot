@@ -20,15 +20,21 @@ class Insta:
         self.driver = None
 
     def login(self, email, pw, show_window_mode):
-        self.get_user_agent()
-        # self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
-        if show_window_mode == 0:           # 관측모드 확인
+        # self.get_user_agent()
+        self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        # 관측모드 확인
+        if show_window_mode == 0:
             self.options.add_argument("headless")
+            self.options.add_argument("no-sandbox")
+
+        self.options.add_argument("--start-maximized")
+        self.options.add_argument("disabled-gpu")
         self.options.add_argument('user-agent='+self.user_agent)     # 크롤링 차단 방지 user-agent 추가
+        self.options.add_argument("lang=ko_KR")
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         # 인스타 로그인 페이지 열기
         self.driver.get("https://www.instagram.com/accounts/login/",)
-        self.driver.maximize_window()
+        # self.driver.maximize_window()
         self.driver.implicitly_wait(10)
 
         # 이름과 패스워드 입력
@@ -86,7 +92,7 @@ class Insta:
         followed_list = []
         counter = 0
         for index in range(0, len(followers_list)):
-            if followers_list[index].text == "팔로우":
+            if followers_list[index].text == "팔로우":         # 아직 팔로우 안한 계정 확인
                 followers_list[index].click()
                 counter += 1
                 print(f"ID: {followers_id[index+1].text}      count: {counter}")
@@ -97,10 +103,57 @@ class Insta:
                     time.sleep(random.randint(10, delay + 1))
                 if counter == count:
                     break
-            else:
+            else:                                             # 이미 팔로우 한 계정이라 언팔 안하기 위해 pass
                 pass
 
         return followed_list
+
+    # 인기 피드 팔로우, 좋아요, 댓글...
+    def popular_pid_follow(self, count, delay, delay_check, comment_value, mode_num):
+        popular_pids = self.driver.find_elements(by=By.CSS_SELECTOR, value="main ._aaq8 ._ac7v ._aabd")
+        account_id_list = []        # 계정 아이디 리스트
+        counter = 0
+        # 실행 동작 반복이 9회가 넘어가면 9로 넣어줌, 인기피드는 9개, 그 이후는 최신태그 메서드로 할거임
+        if count > 9:
+            count = 9
+        for popular_pid in popular_pids:
+            popular_pid.click()
+            time.sleep(1)
+            # 게정 아이디
+            account_id = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasi ._aaqy .futnfnd5 a")
+            account_id_list.append(account_id.text)
+
+            if mode_num in (1, 4, 5, 7):
+                # 팔로우 버튼
+                follow_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasi ._aaqy ._aar2 button ._ab8w")
+                if follow_button.text == "팔로우":
+                    follow_button.click()
+                    time.sleep(1)
+
+            if mode_num in (2, 4, 6, 7):
+                # 좋아요 버튼
+                like_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .pi61vmqs ._aata ._aasx ._aamw button")
+                like_button.click()
+
+            if mode_num in (3, 5, 6, 7):
+                # 댓글
+                comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasx .aaoe .aaoc")
+                comment_area.send_keys(comment_value)
+                comment_area.send_keys(Keys.ENTER)
+                time.sleep(1)
+            # 닫기
+            close_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .o9tjht9c .futnfnd5")
+            close_button.click()
+            counter += 1
+            # 딜레이
+            if delay_check == 0:
+                time.sleep(delay)
+            else:
+                time.sleep(random.randint(10, delay + 1))
+
+            if counter == count:
+                break
+        return account_id_list
 
     def close_insta(self):
         self.driver.close()
