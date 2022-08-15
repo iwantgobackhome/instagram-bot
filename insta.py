@@ -54,12 +54,13 @@ class Insta:
             login_data_save.click()
             print("로그인 팝업 지우기")
 
-            # 알림 팝업 지우기
-            notification_setting = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "._a9-v ._a9-z ._a9_1")))
-            notification_setting.click()
-            print("알림 팝업 지우기")
-            time.sleep(2)
+            if show_window_mode == 1:
+                # 알림 팝업 지우기
+                notification_setting = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "._a9-v ._a9-z ._a9_1")))
+                notification_setting.click()
+                print("알림 팝업 지우기")
+                time.sleep(2)
             return True
         except selenium.common.exceptions.NoSuchElementException:
             self.driver.close()

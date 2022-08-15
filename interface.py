@@ -171,9 +171,6 @@ class Interface:
             self.count_entry.insert(0, "하루 100개 이하를 추천합니다")
             self.count_entry.config(fg="gray")
 
-    def follow_mode(self):
-        if self.follow_combo.get() == self.follow_mode[0]:
-            pass
 
 # 팔로우 모드에 따른 체크버튼 비활성화
     def follow_combo_check(self):
@@ -186,9 +183,8 @@ class Interface:
             self.comment_check.config(state="active")
             self.like_check.config(state="active")
 
+# 리스트박스(출력창)에 넣는 메서드
     def insert_list_box(self, do_list):
-        # for followed_id in self.followed:
-        #     self.list_box.insert(END, followed_id)
         for i in do_list:
             self.list_box.insert(END, i)
 
@@ -257,14 +253,14 @@ class Interface:
                             self.list_box.insert(END, "수행 중")
                             do_tag_mode = insta.use_tag_mode(count_value, delay_value, delay_check, comment_value, self.mode_num)
                             self.insert_list_box(do_tag_mode)
-
+                            self.list_box.insert(f"{len(do_tag_mode)}개 수행완료")
                         # 계정 팔로우 모드
                         elif account_follow_mode:
                             self.list_box.insert(END, "팔로우 중")
                             insta.click_follow_button()
                             followed = insta.account_follow(count_value, delay_value, delay_check)
                             self.insert_list_box(followed)
-
+                            self.list_box.insert(f"{len(followed)}개 팔로우 완료")
                         else:
                             insta.close_insta()
                             messagebox.showerror(title="Error", message="계정으로 팔로우모드는 다른 모드와 같이 실행 할 수 없습니다!\n다른 모드"
