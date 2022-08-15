@@ -108,9 +108,8 @@ class Interface:
 
         self.setting_frame.place(x=25, y=193)
 
-        self.window.mainloop()
-
         self.mode_num = 0
+        self.window.mainloop()
 
     # clear 매서드는 각 입력창의 기본값을 클릭하면 지우고 쓰는 역할
     def tag_clear(self, event):     # 매개변수 event 안써주면 안됨
@@ -228,6 +227,8 @@ class Interface:
             self.mode_num = 6
         elif all_mode:
             self.mode_num = 7
+        elif account_follow_mode:
+            self.mode_num = 0
 
         # 아이디하고 비밀번호 공백인지 확인
         if user_id != "" and user_pw != "":
@@ -253,14 +254,13 @@ class Interface:
                             self.list_box.insert(END, "수행 중")
                             do_tag_mode = insta.use_tag_mode(count_value, delay_value, delay_check, comment_value, self.mode_num)
                             self.insert_list_box(do_tag_mode)
-                            self.list_box.insert(f"{len(do_tag_mode)}개 수행완료")
+                            self.list_box.insert(END, f"{len(do_tag_mode)}개 수행완료")
                         # 계정 팔로우 모드
                         elif account_follow_mode:
                             self.list_box.insert(END, "팔로우 중")
-                            insta.click_follow_button()
-                            followed = insta.account_follow(count_value, delay_value, delay_check)
+                            followed = insta.account_follow(count_value, delay_value, delay_check, user_id)
                             self.insert_list_box(followed)
-                            self.list_box.insert(f"{len(followed)}개 팔로우 완료")
+                            self.list_box.insert(END, f"{len(followed)}개 팔로우 완료")
                         else:
                             insta.close_insta()
                             messagebox.showerror(title="Error", message="계정으로 팔로우모드는 다른 모드와 같이 실행 할 수 없습니다!\n다른 모드"

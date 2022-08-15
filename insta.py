@@ -78,22 +78,26 @@ class Insta:
         search_account.click()
         self.driver.implicitly_wait(10)
 
-    def click_follow_button(self):
+    def account_follow(self, count, delay, delay_check, user_id):
         # 팔로워 버튼 누르기
         followers_button = self.driver.find_element(by=By.CSS_SELECTOR, value="._aa_7 li a")
         followers_button.click()
         time.sleep(3)
 
         # 스크롤 하기
-        scoll = self.driver.find_element(by=By.CSS_SELECTOR, value="._ab8w ._aano")
-        for i in range(10):
-            self.driver.execute_script("arguments[0].scrollBy(0, 620)", scoll)
-            time.sleep(4)
 
-    def account_follow(self, count, delay, delay_check):
-        # 팔로워 목록 가져오기
+        scoll = self.driver.find_element(by=By.CSS_SELECTOR, value="._ab8w ._aano")
         followers_list = self.driver.find_elements(by=By.CSS_SELECTOR, value="._ab8w ._aano ._ab94 ._abb0 ._acap")
+        # 입력한 횟수보다 클때 까지 스크롤
+        while len(followers_list) < count:
+            self.driver.execute_script("arguments[0].scrollBy(0, 650)", scoll)
+            time.sleep(5)
+            followers_list = self.driver.find_elements(by=By.CSS_SELECTOR, value="._ab8w ._aano ._ab94 ._abb0 ._acap")
+
+        # 팔로워 목록 가져오기
         followers_id = self.driver.find_elements(by=By.CSS_SELECTOR, value="._ab8w ._aano ._ab94 ._ab9o a")
+        if followers_id[0].text == user_id:         # 해당 계정을 내가 팔로우 했을 경우, 제일 처음에는 나의 계정이 나오기에 슬라이싱으로 제외
+            followers_id = followers_id[1:]
 
         followed_list = []
         counter = 0
@@ -101,8 +105,8 @@ class Insta:
             if followers_list[index].text == "팔로우":         # 아직 팔로우 안한 계정 확인
                 followers_list[index].click()
                 counter += 1
-                print(f"ID: {followers_id[index+1].text}      count: {counter}")
-                followed_list.append(followers_id[index+1].text)
+                print(f"ID: {followers_id[index].text}      count: {counter}")
+                followed_list.append(followers_id[index].text)
                 if delay_check == 0:
                     time.sleep(delay)
                 else:
@@ -160,7 +164,7 @@ class Insta:
             print(f"계정: {account_id_list[i]} 횟수: {counter}")
 
             # 딜레이
-            if delay_check == 0:
+            if delay_check == 0 or delay < 10:
                 time.sleep(delay)
             else:
                 time.sleep(random.randint(10, delay + 1))
