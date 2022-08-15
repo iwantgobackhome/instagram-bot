@@ -247,15 +247,18 @@ class Interface:
                     insta = Insta()
                     self.list_box.insert(END, "로그인 중")
                     login_success = insta.login(user_id, user_pw, show_window_check)
+                    # 로그인 성공 확인
                     if login_success:
                         self.list_box.insert(END, "로그인 성공")
                         insta.search(tag_value)
 
+                        # 태그 모드
                         if 1 <= self.mode_num <= 7:
                             self.list_box.insert(END, "수행 중")
-                            do_popular_result = insta.popular_pid_follow(count_value, delay_value, delay_check, comment_value, self.mode_num)
-                            self.insert_list_box(do_popular_result)
+                            do_tag_mode = insta.use_tag_mode(count_value, delay_value, delay_check, comment_value, self.mode_num)
+                            self.insert_list_box(do_tag_mode)
 
+                        # 계정 팔로우 모드
                         elif account_follow_mode:
                             self.list_box.insert(END, "팔로우 중")
                             insta.click_follow_button()

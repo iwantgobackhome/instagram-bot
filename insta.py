@@ -34,26 +34,31 @@ class Insta:
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         # 인스타 로그인 페이지 열기
         self.driver.get("https://www.instagram.com/accounts/login/",)
-        # self.driver.maximize_window()
         self.driver.implicitly_wait(10)
 
         # 이름과 패스워드 입력
         username = self.driver.find_element(by=By.NAME, value="username")
         username.send_keys(email)
+        print("id입력")
         password = self.driver.find_element(by=By.NAME, value="password")
         password.send_keys(pw)
+        print("패스워드 입력")
         password.send_keys(Keys.ENTER)
+        print("로그인")
         self.driver.implicitly_wait(10)
 
         try:
             # 로그인 정보 저장 팝업 지우기
+            print("로그인 성공")
             login_data_save = self.driver.find_element(by=By.CSS_SELECTOR, value=".cmbtv button")
             login_data_save.click()
+            print("로그인 팝업 지우기")
 
             # 알림 팝업 지우기
             notification_setting = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "._a9-v ._a9-z ._a9_1")))
             notification_setting.click()
+            print("알림 팝업 지우기")
             time.sleep(2)
             return True
         except selenium.common.exceptions.NoSuchElementException:
@@ -108,19 +113,17 @@ class Insta:
 
         return followed_list
 
-    # 인기 피드 팔로우, 좋아요, 댓글...
-    def popular_pid_follow(self, count, delay, delay_check, comment_value, mode_num):
-        popular_pids = self.driver.find_elements(by=By.CSS_SELECTOR, value="main ._aaq8 ._ac7v ._aabd")
-        account_id_list = []        # 계정 아이디 리스트
+    def use_tag_mode(self, count, delay, delay_check, comment_value, mode_num):
         counter = 0
-        # 실행 동작 반복이 9회가 넘어가면 9로 넣어줌, 인기피드는 9개, 그 이후는 최신태그 메서드로 할거임
-        if count > 9:
-            count = 9
-        for popular_pid in popular_pids:
-            popular_pid.click()
-            time.sleep(1)
-            # 게정 아이디
-            account_id = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasi ._aaqy .futnfnd5 a")
+        account_id_list = []
+        # 첫번째 피드
+        first_newest_pids = self.driver.find_element(by=By.CSS_SELECTOR,
+                                                     value=".rq0escxv ._a993 ._aao7 div ._ac7v ._aabd")
+        first_newest_pids.click()
+
+        for i in range(0, count):
+            # 피드 계정이 로드 될때까지 최대 5초 기다림, 즉 피드가 로드 될때까지 기다림
+            account_id = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".rq0escxv ._aata ._aasw ._aasi ._aaqy .futnfnd5 a")))
             account_id_list.append(account_id.text)
 
             if mode_num in (1, 4, 5, 7):
@@ -142,25 +145,39 @@ class Insta:
                     comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx textarea")
                     comment_area.click()
                     # StaleElementReferenceException 에러 발생하여 다시 가져오기
-                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR,
-                                                            value=".rq0escxv ._aata ._aasw ._aasx ._aaoe ._aao9 ._ablz")
+                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx ._aaoe ._aao9 ._ablz")
                     comment_area.send_keys(comment_value)
-                    comment_area.send_keys(Keys.ENTER)
-                    time.sleep(2)
+                    # 댓글 전송 버튼
+                    send_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx ._aaoe ._aao9 ._acan")
+                    send_button.click()
+                    # comment_area.send_keys(Keys.ENTER)
                 except selenium.common.exceptions.TimeoutException:     # 간혹 댓글 차단 게시글 있으면 넘어가기
                     pass
-            # 닫기
-            close_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .o9tjht9c .futnfnd5")
-            close_button.click()
+                except selenium.common.exceptions.ElementClickInterceptedException:     # 마지막 댓글 전송하면 계속 해당 오류발생하기에 pass처리
+                    pass
             counter += 1
+            print(f"계정: {account_id_list[i]} 횟수: {counter}")
+
             # 딜레이
             if delay_check == 0:
                 time.sleep(delay)
             else:
                 time.sleep(random.randint(10, delay + 1))
 
+            # 지정한 개수만큼 수행하면 피드 닫기
             if counter == count:
+                close_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .o9tjht9c .futnfnd5")
+                close_button.click()
                 break
+            # 다음 게시글
+            try:
+                next_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._a3gq ._aank ._aaqg ._abl-")
+                next_button.click()
+            except selenium.common.exceptions.NoSuchElementException:
+                # 간혹 더 이상의 게시글이 없을때
+                account_id_list.append("더 이상의 게시물이 없습니다.")
+                break
+
         return account_id_list
 
     def close_insta(self):
