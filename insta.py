@@ -31,6 +31,7 @@ class Insta:
         self.options.add_argument("disabled-gpu")
         self.options.add_argument('user-agent='+self.user_agent)     # 크롤링 차단 방지 user-agent 추가
         self.options.add_argument("lang=ko_KR")
+        self.options.add_experimental_option("excludeSwitches", ["enable-logging"])         # use 오류 지우는 용도
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.options)
         # 인스타 로그인 페이지 열기
         self.driver.get("https://www.instagram.com/accounts/login/",)
