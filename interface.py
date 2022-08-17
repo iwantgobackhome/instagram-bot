@@ -84,8 +84,8 @@ class Interface:
         self.like_check.grid(row=2, column=0, pady=5)
 
             # tag
-        self.tag_entry = Entry(self.setting_frame, width=20, fg="gray")
-        self.tag_entry.insert(END, "태그나 계정을 입력하세요")
+        self.tag_entry = Entry(self.setting_frame, width=30, fg="gray")
+        self.tag_entry.insert(END, "태그(앞에# 필수)나 계정을 입력하세요")
         self.tag_entry.grid(row=2, column=1, sticky="w")
         self.tag_entry.bind('<Button-1>', self.tag_clear)       # 클릭하면 지워짐
 
@@ -126,7 +126,7 @@ class Interface:
 
     # clear 매서드는 각 입력창의 기본값을 클릭하면 지우고 쓰는 역할
     def tag_clear(self, event):     # 매개변수 event 안써주면 안됨
-        if self.tag_entry.get() == "태그나 계정을 입력하세요":
+        if self.tag_entry.get() == "태그(앞에# 필수)나 계정을 입력하세요":
             self.tag_entry.delete(0, END)
             self.tag_entry.config(fg="black")
         if self.comment_entry.get(0.0, END) == "\n":
@@ -145,7 +145,7 @@ class Interface:
             self.comment_entry.delete(0.0, END)
             self.comment_entry.config(fg="black")
         if self.tag_entry.get() == "":
-            self.tag_entry.insert(0, "태그나 계정을 입력하세요")
+            self.tag_entry.insert(0, "태그(앞에# 필수)나 계정을 입력하세요")
             self.tag_entry.config(fg="gray")
         if self.count_entry.get() == "":
             self.count_entry.insert(0, "하루 100개 이하를 추천합니다")
@@ -160,7 +160,7 @@ class Interface:
             self.count_entry.delete(0, END)
             self.count_entry.config(fg="black")
         if self.tag_entry.get() == "":
-            self.tag_entry.insert(0, "태그나 계정을 입력하세요")
+            self.tag_entry.insert(0, "태그(앞에# 필수)나 계정을 입력하세요")
             self.tag_entry.config(fg="gray")
         if self.comment_entry.get(0.0, END) == "\n":
             self.comment_entry.insert(0.0, "댓글 내용을 입력하세요")
@@ -174,7 +174,7 @@ class Interface:
             self.delay_entry.delete(0, END)
             self.delay_entry.config(fg="black")
         if self.tag_entry.get() == "":
-            self.tag_entry.insert(0, "태그나 계정을 입력하세요")
+            self.tag_entry.insert(0, "태그(앞에# 필수)나 계정을 입력하세요")
             self.tag_entry.config(fg="gray")
         if self.comment_entry.get(0.0, END) == "\n":
             self.comment_entry.insert(0.0, "댓글 내용을 입력하세요")
@@ -203,7 +203,7 @@ class Interface:
     def click_login(self):
         self.list_box.config(fg="black")
         self.list_box.delete(0, END)
-        
+
         user_id = self.id_box.get()
         user_pw = self.pw_box.get()
         count_value = self.count_entry.get()
@@ -253,7 +253,7 @@ class Interface:
                 # 태그와 개수와 딜레이 공백인지 확인
                 if count_value != "하루 100개 이하를 추천합니다" and count_value != ""\
                         and delay_value != "10초 이상(초단위)" and delay_value != ""\
-                        and tag_value != "태그나 계정을 입력하세요" and tag_value != "":
+                        and tag_value != "태그(앞에# 필수)나 계정을 입력하세요" and tag_value != "":
                     delay_value = int(delay_value)
                     count_value = int(count_value)
 
