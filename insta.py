@@ -177,7 +177,7 @@ class Insta:
                 break
             # 다음 게시글
             try:
-                next_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._a3gq ._aank ._aaqg ._abl-")
+                next_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aani ._aank ._aaqg ._abl-")
                 next_button.click()
             except selenium.common.exceptions.NoSuchElementException:
                 # 간혹 더 이상의 게시글이 없을때

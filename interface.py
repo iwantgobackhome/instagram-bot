@@ -43,11 +43,24 @@ class Interface:
             # scroll
         self.list_box_scroll = Scrollbar(self.print_frame)
         self.list_box_scroll.pack(side="right", fill="y")
+            # progess bar
+        # self.provar = IntVar()
+        # self.provar.set(0)
+        # self.progressbar = ttk.Progressbar(self.print_frame, length=213, maximum=100, mode="indeterminate",
+        #                                    )
+        # self.progressbar.pack(side="top", pady=5)
+        # self.progressbar.start(50)
             # print_box
         self.list_box = Listbox(self.print_frame, width=30, height=25, yscrollcommand=self.list_box_scroll.set)
         self.list_box.pack(side="left")
         self.list_box_scroll.config(command=self.list_box.yview)
         self.print_frame.place(x=360, y=77)
+        self.list_box.config(fg="gray")
+        self.list_box.insert(END, "비관측 모드시에는")
+        self.list_box.insert(END, "프로그램이 멈춰보일수 있습니다만")
+        self.list_box.insert(END, "오류가 아니므로 작업이 끝날때까지")
+        self.list_box.insert(END, "기다려주시면 결과가 출력됩니다.")
+
 
         # 설정
         self.setting_frame = LabelFrame(text="setting", relief="raised", borderwidth=1, padx=10, pady=10)
@@ -188,6 +201,9 @@ class Interface:
             self.list_box.insert(END, i)
 
     def click_login(self):
+        self.list_box.config(fg="black")
+        self.list_box.delete(0, END)
+        
         user_id = self.id_box.get()
         user_pw = self.pw_box.get()
         count_value = self.count_entry.get()
@@ -254,7 +270,12 @@ class Interface:
                             self.list_box.insert(END, "수행 중")
                             do_tag_mode = insta.use_tag_mode(count_value, delay_value, delay_check, comment_value, self.mode_num)
                             self.insert_list_box(do_tag_mode)
-                            self.list_box.insert(END, f"{len(do_tag_mode)}개 수행완료")
+
+                            not_more = "더 이상의 게시물이 없습니다."
+                            if do_tag_mode[-1] == not_more:
+                                self.list_box.insert(END, f"{len(do_tag_mode)-1}개 수행완료")
+                            else:
+                                self.list_box.insert(END, f"{len(do_tag_mode)}개 수행완료")
                         # 계정 팔로우 모드
                         elif account_follow_mode:
                             self.list_box.insert(END, "팔로우 중")
