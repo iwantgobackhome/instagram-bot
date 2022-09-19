@@ -7,7 +7,7 @@ from insta import *
 class Interface:
     def __init__(self):
         self.window = Tk()
-        self.window.title("instagram bot ver 1.0")
+        self.window.title("instagram bot ver 1.2")
         self.window.geometry("618x485")
         self.insta_img = PhotoImage(file="image/insta_color2.png")
         self.window.iconbitmap("image/insta_color.ico")

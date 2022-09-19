@@ -21,7 +21,7 @@ class Insta:
 
     def login(self, email, pw, show_window_mode):
         # self.get_user_agent()
-        self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
         # 관측모드 확인
         if show_window_mode == 0:
             self.options.add_argument("headless")
@@ -61,20 +61,26 @@ class Insta:
                     EC.presence_of_element_located((By.CSS_SELECTOR, "._a9-v ._a9-z ._a9_1")))
                 notification_setting.click()
                 print("알림 팝업 지우기")
-                time.sleep(2)
+                # time.sleep(2)
+                self.driver.implicitly_wait(10)
             return True
         except selenium.common.exceptions.NoSuchElementException:
             self.driver.close()
             return False
 
     def search(self, find_value):
+        # 탐색 탭 클릭
+        search_button = self.driver.find_elements(by=By.CSS_SELECTOR, value='.knhh2xuq .cgu29s5g .om3e55n1 a')
+        search_button[1].click()    # 이게 탐색버튼 2번째에 있음
         # 검색창에 찾고 싶은계정 입력
-        search_input = self.driver.find_element(by=By.CSS_SELECTOR, value="._aawf input")
+        search_input = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "._aawf input")))
+        # search_input = self.driver.find_element(by=By.CSS_SELECTOR, value="._aawf input")
         search_input.send_keys(find_value)
         time.sleep(2)
 
         # 검색결과 첫번째 누르기
-        search_account = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "._abn- ._aa61 ._aeul div a")))
+        search_account = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "._abn- ._aa61 ._abnx ._abm4 a")))
         # search_account = self.driver.find_element(by=By.CSS_SELECTOR, value="._abn- ._aa61 ._aeul div a")
         search_account.click()
         self.driver.implicitly_wait(10)
@@ -124,37 +130,37 @@ class Insta:
         account_id_list = []
         # 첫번째 피드
         first_newest_pids = self.driver.find_element(by=By.CSS_SELECTOR,
-                                                     value=".rq0escxv ._a993 ._aao7 div ._ac7v ._aabd")
+                                                     value="main.alzwoclg ._aao7 ._aaq8 div ._ac7v ._aabd")
         first_newest_pids.click()
 
         for i in range(0, count):
             # 피드 계정이 로드 될때까지 최대 5초 기다림, 즉 피드가 로드 될때까지 기다림
-            account_id = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".rq0escxv ._aata ._aasw ._aasi ._aaqy .futnfnd5 a")))
+            account_id = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".hw7435fk ._ab8w ._ae65 header._aaqw ._aaqt ._aap6 a")))
             account_id_list.append(account_id.text)
 
             if mode_num in (1, 4, 5, 7):
                 # 팔로우 버튼
-                follow_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasi ._aaqy ._aar2 button ._ab8w")
+                follow_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".hw7435fk ._ab8w ._ae65 header._aaqw ._aaqy ._aar0 ._aar2 button._acan")
                 if follow_button.text == "팔로우":
                     follow_button.click()
                     time.sleep(1)
 
             if mode_num in (2, 4, 6, 7):
                 # 좋아요 버튼
-                like_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .pi61vmqs ._aata ._aasx ._aamw button")
+                like_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".hw7435fk ._ab8w ._ae65 ._aamu ._aamw button")
                 like_button.click()
 
             if mode_num in (3, 5, 6, 7):
                 # 댓글
                 try:
-                    WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".rq0escxv ._aata ._aasw ._aasx textarea")))
-                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx textarea")
+                    WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".hw7435fk ._ab8w ._ae65 section._aaoe ._aaof textarea")))
+                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".hw7435fk ._ab8w ._ae65 section._aaoe ._aaof textarea")
                     comment_area.click()
                     # StaleElementReferenceException 에러 발생하여 다시 가져오기
-                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx ._aaoe ._aao9 ._ablz")
+                    comment_area = self.driver.find_element(by=By.CSS_SELECTOR, value=".hw7435fk ._ab8w ._ae65 section._aaoe ._aaof textarea")
                     comment_area.send_keys(comment_value)
                     # 댓글 전송 버튼
-                    send_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aata ._aasw ._aasx ._aaoe ._aao9 ._acan")
+                    send_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".hw7435fk ._ab8w ._ae65 section._aaoe ._aaof button")
                     send_button.click()
                     # comment_area.send_keys(Keys.ENTER)
                 except selenium.common.exceptions.TimeoutException:     # 간혹 댓글 차단 게시글 있으면 넘어가기
@@ -172,12 +178,12 @@ class Insta:
 
             # 지정한 개수만큼 수행하면 피드 닫기
             if counter == count:
-                close_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv .o9tjht9c .futnfnd5")
+                close_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".bdao358l .s8sjc6am .qi72231t .alzwoclg")
                 close_button.click()
                 break
             # 다음 게시글
             try:
-                next_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".rq0escxv ._aani ._aank ._aaqg ._abl-")
+                next_button = self.driver.find_element(by=By.CSS_SELECTOR, value=".hael596l ._aeap ._aear ._aaqg button")
                 next_button.click()
             except selenium.common.exceptions.NoSuchElementException:
                 # 간혹 더 이상의 게시글이 없을때
